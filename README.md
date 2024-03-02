@@ -1,31 +1,163 @@
 # intercourse-rs
-What Rust-things I desperately call for when using golang ...
 
-This is the technical backbone of a presentation about Rust after switching back
-to golang in a professional setup. Sometimes, I'm stupid and I make
-**mistakes**. I can't speak for others, but I prefer to make my mistakes in
-Rust. Here is why ...
+This repo is the technical backbone of a presentation about core Rust
+concepts—concepts I would call for when working in another language. The repo
+contains a number of individual crates that are organized in a cargo workspace.
 
-## Overview & Introduction
+This README.md introduces the aforementioned concepts on an abstract level and
+references the crates for exemplification. In some places—and I beg for
+forgiveness—I will compare examples to corresponding equivalent golang
+implementations.
 
-This repository is a collection of hands-on sample code that demonstrate aspects
-of Rust that I definitively miss when coding in golang. The list of such aspects
-include:
+# Installing Rust
+
+Make sure you have rust and cargo
+[installed](https://www.rust-lang.org/tools/install) on your system.
+
+Once you have cargo installed, you can run general commands like `cargo clippy`,
+`cargo test`, or `cargo build` in the root directory and run the linter, the
+test or the build is executed for all contained crates.
+
+_For example_:
+```console
+intercourse-rs/ $ cargo build
+...
+     Finished dev [unoptimized + debuginfo] target(s) in 0.60s
+```
+
+If you want to run a binary of a specific crate, you can either specify the
+crate name when calling `cargo run --bin <crate_name>` from the root directory,
+or switch into the corresponding crate directory and just run `cargo run` there.
+The crate name is specified in the `Cargo.toml` of the respective crate.
+
+```console
+# the following two commands yield equivalent results
+intercourse-rs/ $ cargo run --bin <crate_name>
+intercourse-rs/ $ pushd <dir_of_crate>; cargo run --bin <crate_name>; popd
+```
+
+# Introduction & Overview
+
+## Why Rust ...
+
+*sigh*
+
+> You don't know a programming language — unless you *hate* it ... 😉
+>
+> — *yours truly*
+
+You can trust me on one thing: Rust can be a nasty. And especially in areas
+where I myself carried the risk for operational problems myself (e.g., you need
+to restart a job on CI because out-of-memory) and _not_ the customer, every now
+and then I found yourself thinking: _Jesus, I don't wanna bother with concurrent
+memory management, just give me a high-level, functional, GC-collected language
+already!_
+
+But just as the grass is always greener on the other side, you only truly learn
+what something is worth after you lose it. I don't have a favorite programming
+language and, at this point, I think it's unwise thing to have that anyway.
+However, under specific constraints, I'm willing to make strong bets. And one of
+these strong bets is the following: If my «bread and butter» boils down to
+delivering and maintaining mission critical components of (distributed) systems,
+Rust is my first (and only) choice. _Life is short in systems engineering as
+well, and mistakes happen. I prefer to make my mistakes in Rust. Here is why
+..._
+
+## What: the theory ...
+
+Using expressive, strong type systems one can typically reveal defects at an
+_early_ stage of the implementation; defects which would otherwise «slip
+through» and potentially cause havoc at runtime. However, the fact that we can
+check consistency mechanically is only part of the story: through the use of
+strong types, we provide more accurate information about what we are trying to
+achieve, not only to the compiler—but also to ourselves _and others_. As a
+result, in my experience, many potential issues become obvious already at the
+_modeling stage_—and thus _before_ we run the type checker even the first time.
+
+For example: Rust does not allow you to just share pointers across threads and
+the type system makes that obvious. If you want to have a smart pointer, you
+have to decide whether it is just reference-counted (`Rc`) or atomically
+reference-counted (`Arc`). The type system asks you, so to speak, _are you sure
+you don't want to share across threads?_ (In most situations, you just use an
+`Arc` and be done with it.)
+
+Furthermore, while type-sophistication is _also_ a way to make reviewers'
+lives—let's say—interesting, strong types tend to reduce the risk of
+misunderstandings between engineers. And I'm sorry for being provocative here,
+but especially the latter point I cannot stress enough when claims come up about
+how certain «simple» programming languages are supposedly making the lives of
+reviewers comparatively easier.
+
+Also—and again, my personal view—what it feels like to write code in a
+programming language is really _secondary_ to another question: _How quickly can
+I convince myself that a specific property holds for a given code?_ To give an
+example: while the experience of _writing_ Python code is quite pleasant, the
+experience of operationalizing it and taking responsibility for the reliability
+of a shipped/deployed system component written in Python is anything but
+pleasant.
+
+Conversely, in Rust, at the moment you write some code, you might be annoyed
+that you need to decide, e.g., «`Arc` or `Rc`?» But in the long run, _others_
+(including your _future self_) will highly appreciate the fact that this
+decision is clearly documented and the consequences of it are statically and
+mechanically enforced. And this is even more true if the decision turns out to
+be the wrong one down the road. Because again, the type system prevents you from
+violating prior assumptions.
+
+## Why it matters: Engineering must scale ...
+
+> Conventions don't scale.
+>
+> — Bjarne Stroustrup, [«Delivering Safe C++»](https://www.youtube.com/watch?v=I8UvQKvOSSw), Keynote CppCon'23
+
+In a team, you might agree on certain conventions, but that only gets you so
+far. Teams change and most of the time, engineers are under pressure to deliver
+a feature.  They don't get all the decisions right when they _create_ new
+components and their APIs, and they must be prevented from making faulty
+assumptions about APIs others (or they themselves) created.
+
+Furthermore, not only is natural for engineers to change their minds about _how_
+they want to achieve things, also customers, directors, and thus product owners
+change their minds about what they want—past plans are that: plans of the past.
+Under these conditions, you must be able to duck-tape a new solution using a
+existing code—again, ideally without running the risk of introducing
+contradicting assumptions when composing APIs.
+
+So, in summary, there is no news here, _there are no solutions, there are only
+trade-offs._ Of course, you could spin the above argument about types ad
+infinitum and—figuratively speaking—insist on using Haskell (or whatever), and
+spend the rest of your days discussing mind-boggling abstractions until your
+head spins—probably not a winning strategy. What is remarkable to me at least is
+that Rust managed to make the right trade-offs insofar as it almost _stormed_
+the system engineering space.  For the first time, engineers have a practical
+alternative to C[++] for security- and performance-critical applications, while,
+e.g., still providing benefits in areas like web engineering, smart contracts,
+etc., typically confined to dynamically typed "high-level" languages.
+
+Rust is not the last word—god forbid. But empirically speaking, as ugly as it
+is—and it is ugly—, it definitively hit the nail on the head in some ways to be
+extremely effective for a wide range of applications.
+
+## Concepts
+
+_Get concrete already ..._
+
+
 
 * Language Concepts
-  * Sum types (Algebraic data types)
+  * [Sum types](#sum-types) (Algebraic data types)
   * RAII
   * Iterators
   * Scoping
   * Ownership types
   * Send + Sync
-* Tooling
+* Static Analysis & Linting
 * Documentation
 
-## Sum types
+# Sum types
 
 _Together with product types (`struct`s and tuples), sum types allow for
-**unambiguous** modelling of application state._
+**unambiguous** modeling of application state._
 
 The key in the above sentence is «unambiguous». Consider the following
 enumeration that represents the state of a Job, that is either waiting for
@@ -82,7 +214,7 @@ made their way into [Swift](https://www.swift.org/),
 [Typescript](https://www.typescriptlang.org/), ... and
 [Rust](https://www.rust-lang.org/).
 
-### `Option<T>`
+## `Option<T>`
 
 A canonical example of a sum type in Rust is
 [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html), which is
@@ -153,7 +285,7 @@ message")` instead of just `.unwrap()`. The given message will be included in
 the panic message and provides further guidance in case of a panic. It also acts
 as documentation on why a value is expected to be there.
 
-#### Intermezzo: `Option::<&T>::None == null`
+### Intermezzo: `Option::<&T>::None == null`
 
 This is a quick intermezzo regarding the all-farmous «zero-cost abstractions» in
 Rust. In the above example, the call to
@@ -164,7 +296,7 @@ associated with using an option type at runtime. As a null-pointer is an invalid
 reference in any case, the `None`-variant is simply represented as a
 `null`-Pointer.
 
-### CLI-Argument parsing: a more elaborate use case
+## CLI-Argument parsing: a more elaborate use case
 
 In my not-so-humble view, the easy stuff is also easy in Rust—but simpler(*). While
 the hard stuff is becoming possible. And this section, I would like to discuss a
