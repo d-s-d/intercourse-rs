@@ -5,6 +5,6 @@ edition = "2021"
 [workspace]
 resolver = "2"
 members = [
-  "people_preference",
-  "arg_parsing",
+  "network_simulator",
+  "concurrent_output",
 ]
