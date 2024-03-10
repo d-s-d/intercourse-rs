@@ -66,6 +66,11 @@ Rust. And here is why ..._
 
 ## The theory ...
 
+_Software Engineering is ability to retain invariants under (re-)composition._
+
+(ChatGPT4 agrees with this statement, btw. So, either, you agree too—or you
+implicitly admit that co-pilot is useless for precisely the reasons below. 😉)
+
 Using expressive, strong type systems one can typically reveal defects at an
 _early_ stage of the implementation; defects which would otherwise «slip
 through» and potentially cause havoc at runtime. However, the fact that we can
@@ -81,28 +86,22 @@ pointer, you have to decide whether it is just reference-counted (`Rc`) or
 atomically reference-counted (`Arc`). The type system asks you, so to speak,
 _are you sure you don't want to share across threads?_
 
-There is a limit to everything and type-sophistication is _also_ a way to make
-reviewers' lives—let's say—interesting. But strong types generally reduce the
-risk of misunderstandings between engineers. And I'm sorry for being provocative
-here, but especially the latter point I cannot stress enough when claims come up
-about how certain «simple» programming languages are supposedly making the lives
-of reviewers comparatively more pleasant.
+A programming language should not be judged by how 'easy' it is to learn, but by
+how effective teams are at creating reliable, correct software. In a similar
+vein, what it feels like to write code in a programming language is really
+_secondary_ to another question: _How quickly can I convince myself that a
+specific property holds for a given code?_ To give an extreme example: while the
+experience of _writing_ Python code is quite pleasant, the experience of
+operationalizing it and taking responsibility for the reliability of a
+shipped/deployed system component written in Python is anything but pleasant.
 
-To further elaborate on this point, imho, what it feels like to write code in a
-programming language is really _secondary_ to another question: _How quickly can
-I convince myself that a specific property holds for a given code?_ To give an
-extreme example: while the experience of _writing_ Python code is quite
-pleasant, the experience of operationalizing it and taking responsibility for
-the reliability of a shipped/deployed system component written in Python is
-anything but pleasant.
-
-Conversely, in Rust, at the moment you write some code, you might be annoyed
-that you need to decide, e.g., «`Arc` or `Rc`?», when that seemingly has nothing
-to do with the problem you are trying to solve. But in the long run, _others_
-(including your _future self_) will highly appreciate the fact that this
-decision is _clearly documented_ and the consequences of it are statically and
-mechanically enforced. And this is even more true if, later on, that decision
-turns out to be the wrong: the type system prevents you from violating prior
+Conversely, in Rust, when writing some code, you might be annoyed that you need
+to decide, e.g., «`Arc` or `Rc`?», when that seemingly has nothing to do with
+the problem you are trying to solve. But in the long run, _others_ (including
+your _future self_) will highly appreciate the fact that this decision is
+_clearly documented_ and the consequences of it are statically and mechanically
+enforced. The latter is particularly important if, later on, that decision turns
+out to be the wrong: the type system prevents you from violating prior
 assumptions.
 
 ## Why it matters: Engineering must scale ...
@@ -118,10 +117,10 @@ and they must be prevented from making faulty assumptions about APIs others (or
 they themselves) created.
 
 Furthermore, not only is it natural for engineers to change their minds about
-_how_ they want to achieve things, also customers, directors, and thus product
-owners change their minds about _what_ they want—past plans are just that: plans
-of the past. Under these conditions, you must be able to duck-tape a new
-solutions using a existing code—again, ideally without running the risk of
+_how_ they want to implement solutions, also customers, directors, and thus
+product owners change their minds about _what_ they want—past plans are just
+that: plans of the past. Under these conditions, you must be able to duck-tape a
+new solutions using a existing code—again, ideally without running the risk of
 introducing contradicting assumptions when composing APIs.
 
 As always, _there are no solutions, there are only trade-offs._ Of course, you
@@ -129,16 +128,18 @@ could spin the above argument about types ad infinitum and—figuratively
 speaking—insist on using Haskell (or whatever), and spend the rest of your days
 discussing mind-boggling abstractions until your head spins—probably not a
 winning strategy. However, what is remarkable to me at least is that Rust
-managed to make the right trade-offs insofar as it almost _stormed_ the system
-engineering space. For the first time, engineers have a practical alternative to
-C[++] for security- and performance-critical applications, while, e.g., still
-providing benefits in areas like web engineering, smart contracts, etc.,
-typically confined to dynamically typed "high-level" languages.
+managed to make the right trade-offs insofar as it pretty much _stormed_ the
+system engineering space. For the first time, engineers have a practical
+alternative to C[++] for security- and performance-critical applications. And,
+still, Rust provides benefits in areas like web engineering, smart contracts,
+etc., areas typically confined to dynamically typed "high-level" languages.
 
 Rust is not the last word—god forbid. But empirically speaking, as ugly as it
-is—and it is ugly—, it definitively hit the nail on the head in some ways to be
-extremely effective for a wide range of applications. But, don't take my word
+is—and it is ugly (*)—, it definitively hit the nail on the head in some ways to
+be extremely effective for a wide range of applications. But, don't take my word
 for it ...
+
+_(*) not as ugly as C++, mind you._
 
 ## Market Adoption
 
@@ -147,7 +148,7 @@ for it ...
 The promises that blockchain- and web3-advocates make are generally overhyped.
 But my interest here primarily concerns the engineering aspects, not the
 business case. And, like it or not, many engineers with systems and security
-engineering expertise were attracted to that space by combinations of genuine
+engineering expertise were attracted to that space by a combination of genuine
 interest in the technology, hype, money, etc. And all of them faced the same
 problem: build, deliver and deploy secure and efficient components of a
 distributed system that provides predictable, deterministic results.
@@ -164,9 +165,9 @@ name a few:
 * [IOHK](https://github.com/input-output-hk),
 * [Polkadot](https://github.com/paritytech/polkadot-sdk),
 * [ICP](https://github.com/dfinity/ic),
-* [Near](https://github.com/near), and
-* [Solana](https://github.com/solana-labs/solana).
-* [MystenLabs](https://github.com/MystenLabs/)
+* [Near](https://github.com/near),
+* [Solana](https://github.com/solana-labs/solana), and
+* [MystenLabs](https://github.com/MystenLabs/).
 
 Beyond traditional blockchain, there is a lot happening in the area of
 zero-knowledge proofs. [MatterLabs](https://github.com/matter-labs) is mentioned
@@ -175,7 +176,7 @@ here just as an example.
 ### Systems engineering
 
 This is a completely random, small set of examples of companies and projects
-that adopted Rust for the mission-critical systems components. I provocatively
+that adopted Rust for the mission-critical system components. I provocatively
 mention some projects that rewrote some of their services from golang to Rust.
 
 * AWS chose Rust to implement [Firecracker](https://aws.amazon.com/blogs/opensource/why-aws-loves-rust-and-how-wed-like-to-help/), a virtualization technology that allows the launch of lightweight micro-virtual machines (microVMs) in a fraction of a second.
@@ -183,7 +184,7 @@ mention some projects that rewrote some of their services from golang to Rust.
 * Meta is one of the companies that [endorses](https://engineering.fb.com/2022/07/27/developer-tools/programming-languages-endorsed-for-server-side-use-at-meta/) Rust in general. Quoting from the linked article: «[...] There’s a rapidly increasing Rust footprint in our products and services, and we’re committing to Rust long-term and welcome early adopters. [...]»
 * Google started adopting Rust and they have some [insights](https://opensource.googleblog.com/2023/06/rust-fact-vs-fiction-5-insights-from-googles-rust-journey-2022.html) to share.
 * Discord [rewrote](https://discord.com/blog/why-discord-is-switching-from-go-to-rust) their real-time push notification service in Rust.
-* Data dog rewrote a lot of code in Rust and they even created their own async-runtime, [glommio](https://github.com/DataDog/glommio). Among other blog posts, two of their engineers shred their experience in this [talk](https://datadogon.datadoghq.com/episodes/datadog-on-rust/).
+* Similarly, Data dog rewrote some of their core services in Rust. They even created their own async-runtime, [glommio](https://github.com/DataDog/glommio). Two of their engineers shared their experience in this [talk](https://datadogon.datadoghq.com/episodes/datadog-on-rust/).
 * Linkerd [rewrote](https://github.com/linkerd/linkerd2-proxy) their service-mesh reverse proxy in Rust.
 * etc.
 
@@ -192,27 +193,27 @@ mention some projects that rewrote some of their services from golang to Rust.
 It is not surprising that Rust is being adopted in places where traditionally
 C++ would have been used. However, its type system also shines in other areas.
 [Yew](https://yew.rs/) and [Dioxus](https://dioxuslabs.com/) are two
-frontend-frameworks that are similar to React and target webassembly. Both of them are in use by commercial companies.
+React-like frontend-frameworks that target webassembly. Both of them are in use
+by commercial companies.
 
 ### Operating Systems
 
-Unsurprisingly, Operating Systems space got its fair share of Rust-love.
+Unsurprisingly, the Operating Systems space got its fair share of Rust-love.
 [Redox](https://www.redox-os.org/) comes to mind. Though, in my view,
 applications using library operating systems like
 [Hermit-OS](https://github.com/hermit-os/) are gonna become more interesting in
 the coming years.
 
 It is worth mentioning that, besides C, Rust is the _only_ programming language
-that has a chance of being an
+that has a chance of being
 [accepted](https://en.wikipedia.org/wiki/Rust_for_Linux) as a default
 development language for the Linux kernel. This is also one of the main reason
-why the GCC-team opted to create their own Rust-frontend.
+why the GCC-team opted to create their [own](https://rust-gcc.github.io/)
+Rust-frontend.
 
 ## Concepts
 
 _Get concrete already ..._
-
-
 
 * Language Concepts
   * [Sum types](#sum-types) (Algebraic data types)
@@ -343,14 +344,14 @@ In the above example, if `"Alice"` is missing, `alice_prefs` is just initialized
 to the zero-value of the struct and the value propagates happily throughout the
 code—most of the time, not what we want.
 
-> Note: Depending on the situation, it is preferrable to use `.expect("some
-message")` instead of just `.unwrap()`. The given message will be included in
-the panic message and provides further guidance in case of a panic. It also acts
-as documentation on why a value is expected to be there.
+> Note: Depending on the situation, it is preferable to use
+`.expect("some message")` instead of just `.unwrap()`. The given message will be
+included in the panic message and provides further guidance in case of a panic.
+It also acts as documentation on why a value is expected to be there.
 
 ### Intermezzo: `Option::<&T>::None == null`
 
-This is a quick intermezzo regarding the all-farmous «zero-cost abstractions» in
+This is a quick intermezzo regarding the all-famous «zero-cost abstractions» in
 Rust. In the above example, the call to
 [`get`](https://doc.rust-lang.org/std/collections/struct.HashMap.html#method.get)
 returns a `Option<&V>`, where `V` is the value type of the hash map. In this
@@ -369,7 +370,7 @@ CLI-argument parsing.
 (*) Note: simple and easy are not the same thing.
 
 ADTs are a good fit to represent abstract syntax trees (ASTs) in general. And in
-Rust, one can reprsent the set of possible input arguments to a program as a
+Rust, one can represent the set of possible input arguments to a program as a
 type. In other words: there is no need to figure out the structure of the parser
 by reading program code—it is informed by the type declaration.
 

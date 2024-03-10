@@ -1,5 +1,5 @@
 [package]
-name = "concurrent_output"
+name = "concurrent-output"
 version.workspace = true
 edition.workspace = true
 
