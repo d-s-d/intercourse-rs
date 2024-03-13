@@ -6,10 +6,11 @@ edition = "2021"
 resolver = "2"
 members = [
   "concurrent_output",
-  "it_company",
+  "it_department",
   "network_simulator",
 ]
 
 [workspace.dependencies]
 phantom_newtype = "0.2"
 thiserror = "1.0"
+clap = { version = "4", features = ["derive"] }
